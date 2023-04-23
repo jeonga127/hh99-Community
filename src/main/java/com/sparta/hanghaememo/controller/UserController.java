@@ -18,16 +18,19 @@ public class UserController {
 
     private final UserService userService;
 
+    // 회원 가입 기능
     @PostMapping("/signup")
     public ResponseEntity signup(@Valid @RequestBody SignupRequestDto signupRequestDto) {
         return userService.signup(signupRequestDto);
     }
 
+    // 로그인 기능
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) throws Exception {
         return userService.login(loginRequestDto,response);
     }
-
+    
+    // 회원 탈퇴 기능
     @DeleteMapping("/withdrawl")
     public ResponseEntity withdrawl(@AuthenticationPrincipal UserDetailsImpl userDetails){
         return userService.withdrawal(userDetails.getUser());

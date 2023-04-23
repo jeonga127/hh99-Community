@@ -57,6 +57,7 @@ public class BoardService {
         return new ResponseEntity(responseDto, HttpStatus.BAD_REQUEST);
     }
 
+    // 게시글 작성 기능
     @Transactional
     public ResponseEntity createBoard(BoardRequestDto boardRequestDTO , Users user){
         Board board = new Board(boardRequestDTO.getTitle(), boardRequestDTO.getContents(), boardRequestDTO.getCategory(), user);
@@ -66,7 +67,7 @@ public class BoardService {
         return new ResponseEntity(responseDTO, HttpStatus.OK);
     }
 
-
+    // 게시글 수정 기능
     @Transactional
     public ResponseEntity updateBoard(Long id, BoardRequestDto boardRequestDTO, Users user) {
         // 게시글 존재여부 확인
@@ -80,6 +81,7 @@ public class BoardService {
         return new ResponseEntity(responseDTO, HttpStatus.OK);
     }
 
+    // 게시글 삭제 기능
     @Transactional
     public ResponseEntity deleteBoard(Long id, Users user) {
         // 게시글 존재여부 확인
@@ -91,7 +93,8 @@ public class BoardService {
         ResponseDto responseDTO = ResponseDto.setSuccess("게시글 삭제 성공",null);
         return new ResponseEntity(responseDTO, HttpStatus.OK);
     }
-
+    
+    // 게시글 좋아요 기능
     @Transactional
     public ResponseEntity updateLikes(Long id, Users user) {
         //게시글 존재여부 확인

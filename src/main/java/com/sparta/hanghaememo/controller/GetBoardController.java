@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -26,8 +27,8 @@ public class GetBoardController {
     }
 
     // 게시글 카테고리별 조회 기능
-    @GetMapping("/api/read")
-    public ResponseEntity getCategorizedBoard(@PathParam("category") String category){
+    @GetMapping("/api/read/category")
+    public ResponseEntity getCategorizedBoard(@RequestParam(value = "category",required = false, defaultValue = "") String category){
         return boardService.getCategorizedBoard(category);
     }
 }

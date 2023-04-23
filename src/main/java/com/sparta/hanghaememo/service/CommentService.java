@@ -70,12 +70,12 @@ public class CommentService {
 
         // 댓글에 현재 유저의 좋아요 유무 확인
         if(commentLikesRepository.existsByCommentIdAndUserId(comment.getId(), user.getId())){
-            // 좋아요가 있으면 삭제
+            // 좋아요가 있으면 취소 (내역 삭제)
             CommentLikes commentLikes = commentLikesRepository.findByCommentIdAndUserId(comment.getId(), user.getId());
             commentLikesRepository.delete(commentLikes);
             comment.updatelikes(commentLikesRepository.countByCommentId(comment.getId()));
             responseDTO.setMessage("Comment 좋아요 감소");
-        }else{ // 없으면 좋아요 +1
+        }else{ // 좋아요가 없다면 진행 (내역 추가)
             commentLikesRepository.save(new CommentLikes(comment, user));
             comment.updatelikes(commentLikesRepository.countByCommentId(comment.getId()));
             responseDTO.setMessage("Comment 좋아요 증가");

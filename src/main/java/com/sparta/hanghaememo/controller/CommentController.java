@@ -13,13 +13,15 @@ import org.springframework.web.bind.annotation.*;
 public class CommentController {
 
     private final CommentService commentService;
-
+    
+    // 댓글 작성 기능
     @PostMapping("/api/comments")
     public ResponseEntity createComment(@RequestBody CommentRequestDto commentRequestDto,
                                         @AuthenticationPrincipal UserDetailsImpl userDetails){
         return commentService.createComment(commentRequestDto, userDetails.getUser());
     }
-
+    
+    // 댓글 수정 기능
     @PutMapping("/api/comments/{id}")
     public ResponseEntity updateComment(@PathVariable Long id,
                                         @RequestBody CommentRequestDto commentrequestDto,
@@ -27,12 +29,14 @@ public class CommentController {
         return commentService.updateComment(id, commentrequestDto, userDetails.getUser());
     }
 
+    // 댓글 삭제 기능
     @DeleteMapping("/api/comments/{id}")
     public ResponseEntity deleteComment(@PathVariable Long id,
                                         @AuthenticationPrincipal UserDetailsImpl userDetails){
         return commentService.deleteComment(id, userDetails.getUser());
     }
 
+    // 댓글 좋아요 기능
     @PutMapping("/api/likes/comment/{id}")
     public ResponseEntity updateLikes(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return commentService.updateLikes(id, userDetails.getUser());
