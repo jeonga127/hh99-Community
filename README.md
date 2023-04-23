@@ -1,5 +1,5 @@
 # hanghaeboard
 
-## API 명서 && ERD 설계 && 유스케이스
+## API 명세 : https://www.notion.so/Spring-Lv-3-4-5-f15b4d2046094523aadb2a5a2dc903ab
 
-[API 명서 && ERD 설계 && 유스케이스 노션](https://desert-package-119.notion.site/Spring-Lv-3-df8021f757b44764b31174e72722b67e)
+## ERD 설계 : <a href="https://ibb.co/2tXSFYt"><img src="https://i.ibb.co/9TRhp3T/ERD.png" alt="ERD" border="0"></a>
