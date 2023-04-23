@@ -14,26 +14,29 @@ public class BoardController {
 
     private final BoardService boardService;
 
+    // 게시글 작성 기능
     @PostMapping("/api/boards")
-    public ResponseEntity write(@RequestBody BoardRequestDto board,
+    public ResponseEntity createBoard(@RequestBody BoardRequestDto board,
                                 @AuthenticationPrincipal UserDetailsImpl userDetails){
-        return boardService.write(board, userDetails.getUser());
+        return boardService.createBoard(board, userDetails.getUser());
     }
 
-
+    // 게시글 수정 기능
     @PutMapping("/api/boards/{id}")
-    public ResponseEntity updateMemo(@PathVariable Long id,
+    public ResponseEntity updateBoard(@PathVariable Long id,
                                      @RequestBody BoardRequestDto boardDTO,
                                      @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return boardService.update(id, boardDTO, userDetails.getUser());
+        return boardService.updateBoard(id, boardDTO, userDetails.getUser());
     }
 
+    // 게시글 삭제 기능
     @DeleteMapping("/api/boards/{id}")
-    public ResponseEntity delete(@PathVariable Long id,
+    public ResponseEntity deleteBoard(@PathVariable Long id,
                                  @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return boardService.delete(id, userDetails.getUser());
+        return boardService.deleteBoard(id, userDetails.getUser());
     }
 
+    // 게시글 좋아요 기능
     @PutMapping("/api/likes/board/{id}")
     public ResponseEntity updateLikes(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails){
         return boardService.updateLikes(id, userDetails.getUser());

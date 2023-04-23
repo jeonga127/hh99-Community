@@ -36,7 +36,7 @@ public class Users {
     }
 
     public Users(SignupRequestDto signupRequestDto) {
-        this.username = username;
-        this.password = password;
+        this.username = signupRequestDto.getUsername();
+        this.password = signupRequestDto.getPassword();
     }
 }

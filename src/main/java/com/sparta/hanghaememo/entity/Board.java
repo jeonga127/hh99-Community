@@ -23,6 +23,12 @@ public class Board extends Timestamped{
     @Column(nullable = false)
     private String contents;
 
+    @Column(nullable = false)
+    private String category;
+
+    @Column(nullable = false)
+    private Long likes;
+
     @ManyToOne
     @JoinColumn(name = "userId", nullable = false)
     private Users user;
@@ -32,24 +38,22 @@ public class Board extends Timestamped{
     @OrderBy("createdAt desc")
     private List<Comment> commentList;
 
-    @Column(nullable = false)
-    private int likes;
 
-    public Board(String title, String contents, Users user) {
+    public Board(String title, String contents, String category, Users user) {
         this.title = title;
         this.contents = contents;
         this.user = user;
-        this.likes = 0;
+        this.category = category;
+        this.likes = 0L;
     }
 
-    public void update(BoardRequestDto boardDTO) {
-        this.title = boardDTO.getTitle();
-        this.contents = boardDTO.getContents();
+    public void update(BoardRequestDto boardRequestDto) {
+        this.title = boardRequestDto.getTitle();
+        this.contents = boardRequestDto.getContents();
+        this.category = boardRequestDto.getCategory();
     }
 
     public void addComment(List<Comment> commentList){ this.commentList = commentList; }
 
-    public void updatelikes(boolean addOrNot){
-        this.likes = addOrNot? this.likes+1 : this.likes-1;
-    }
+    public void updatelikes(Long likes){ this.likes = likes; }
 }

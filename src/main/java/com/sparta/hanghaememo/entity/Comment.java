@@ -28,21 +28,21 @@ public class Comment extends Timestamped{
     private Users user;
 
     @Column(nullable = false)
-    private int likes;
+    private Long likes;
 
     public Comment(Users user, Board board, CommentRequestDto commentRequestDto){
         this.user = user;
         this.board = board;
         this.contents =commentRequestDto.getContents();
-        this.likes = 0;
+        this.likes = 0L;
     }
 
     public void update(CommentRequestDto commentRequestDto){
         this.contents=commentRequestDto.getContents();
     }
 
-    public void updatelikes(boolean addOrNot){
-        this.likes = addOrNot? this.likes+1 : this.likes-1;
+    public void updatelikes(Long likes){
+        this.likes = likes;
     }
 }
 

@@ -13,22 +13,24 @@ import java.util.List;
 @NoArgsConstructor
 public class BoardResponseDto {
     private Long id;
+    private String category;
     private String title;
     private String contents;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
     private Users user;
+    private Long likes;
     private List<Comment> commentList;
-    private int likes;
 
     public BoardResponseDto(Board board) {
         this.id = board.getId();
+        this.category = board.getCategory();
         this.title = board.getTitle();
         this.contents = board.getContents();
+        this.likes = board.getLikes();
         this.createdAt = board.getCreatedAt();
         this.modifiedAt = board.getModifiedAt();
-        this.commentList = board.getCommentList();
         this.user = board.getUser();
-        this.likes = board.getLikes();
+        this.commentList = board.getCommentList();
     }
 }

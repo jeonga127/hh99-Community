@@ -2,15 +2,14 @@ package com.sparta.hanghaememo.controller;
 
 import com.sparta.hanghaememo.dto.user.LoginRequestDto;
 import com.sparta.hanghaememo.dto.user.SignupRequestDto;
+import com.sparta.hanghaememo.security.UserDetailsImpl;
 import com.sparta.hanghaememo.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,5 +28,9 @@ public class UserController {
         return userService.login(loginRequestDto,response);
     }
 
+    @DeleteMapping("/withdrawl")
+    public ResponseEntity withdrawl(@AuthenticationPrincipal UserDetailsImpl userDetails){
+        return userService.withdrawal(userDetails.getUser());
+    }
 
 }
