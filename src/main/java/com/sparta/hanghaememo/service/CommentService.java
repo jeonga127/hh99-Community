@@ -73,11 +73,11 @@ public class CommentService {
             // 좋아요가 있으면 삭제
             CommentLikes commentLikes = commentLikesRepository.findByCommentIdAndUserId(comment.getId(), user.getId());
             commentLikesRepository.delete(commentLikes);
-            comment.updatelikes(false);
+            comment.updatelikes(commentLikesRepository.countByCommentId(comment.getId()));
             responseDTO.setMessage("Comment 좋아요 감소");
         }else{ // 없으면 좋아요 +1
             commentLikesRepository.save(new CommentLikes(comment, user));
-            comment.updatelikes(true);
+            comment.updatelikes(commentLikesRepository.countByCommentId(comment.getId()));
             responseDTO.setMessage("Comment 좋아요 증가");
         }
         responseDTO.setStatus(StatusEnum.OK);

@@ -3,13 +3,9 @@ package com.sparta.hanghaememo.service;
 import com.sparta.hanghaememo.dto.ResponseDto;
 import com.sparta.hanghaememo.dto.user.LoginRequestDto;
 import com.sparta.hanghaememo.dto.user.SignupRequestDto;
-import com.sparta.hanghaememo.entity.ErrorCode;
-import com.sparta.hanghaememo.entity.Token;
-import com.sparta.hanghaememo.entity.UserRoleEnum;
-import com.sparta.hanghaememo.entity.Users;
+import com.sparta.hanghaememo.entity.*;
 import com.sparta.hanghaememo.jwt.JwtUtil;
-import com.sparta.hanghaememo.repository.TokenRepository;
-import com.sparta.hanghaememo.repository.UserRepository;
+import com.sparta.hanghaememo.repository.*;
 import com.sparta.hanghaememo.security.CustomException;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -29,8 +26,14 @@ public class UserService {
     private final TokenRepository tokenRepository;
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
+
+    private final BoardRepository boardRepository;
+    private final BoardLikesRepository boardLikesRepository;
+    private final CommentRepository commentRepository;
+    private final CommentLikesRepository commentLikesRepository;
     private static final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
 
+    // 회원 가입
     @Transactional
     public ResponseEntity signup(SignupRequestDto signupRequestDto) {
         String username = signupRequestDto.getUsername();
@@ -50,13 +53,15 @@ public class UserService {
             }
             role = UserRoleEnum.ADMIN;
         }
-
+        
+        // 새로운 사용자 정보 저장
         Users user = new Users(username, password, role);
         userRepository.save(user);
         ResponseDto responseDTO = ResponseDto.setSuccess("회원가입 성공", null);
         return new ResponseEntity(responseDTO, HttpStatus.OK);
     }
 
+    // 로그인
     @Transactional
     public ResponseEntity login(LoginRequestDto loginRequestDto, HttpServletResponse response) throws Exception{
         String username = loginRequestDto.getUsername();
@@ -70,6 +75,7 @@ public class UserService {
             throw new CustomException(ErrorCode.NON_LOGIN);
         }
 
+        // 사용자에게 Refresh 토큰 & Access 토큰 발급
         String refreshtoken = jwtUtil.createToken(user.getUsername(), user.getRole(),"REFRESH_HEADER");
         String accesstoken = jwtUtil.createToken(user.getUsername(), user.getRole(), "ACCESS_HEADER");
 
@@ -77,9 +83,29 @@ public class UserService {
             Token token = tokenRepository.findByUsername(username);
             token.update(new Token(username, accesstoken, refreshtoken ));
         } else tokenRepository.save(new Token(username, accesstoken, refreshtoken));
-
+         
+        // Access 토큰만 헤더에 담아 보냄
         response.addHeader(jwtUtil.ACCESS_HEADER, accesstoken);
         ResponseDto responseDTO = ResponseDto.setSuccess("로그인 성공", user);
+        return new ResponseEntity(responseDTO, HttpStatus.OK);
+    }
+    
+    // 회원 탈퇴
+    @Transactional
+    public ResponseEntity withdrawal(Users user) {
+        long user_id = user.getId();
+
+        // 사용자의 게시물, 댓글, 좋아요 흔적 모두 삭제
+        commentLikesRepository.deleteAllByUserId(user_id);
+        commentRepository.deleteAllByUserId(user_id);
+        boardLikesRepository.deleteAllByUserId(user_id);
+        boardRepository.deleteAllByUserId(user_id);
+
+        // 사용자 정보 & 토큰 정보 모두 삭제
+        tokenRepository.deleteByUsername(user.getUsername());
+        userRepository.deleteById(user_id);
+
+        ResponseDto responseDTO = ResponseDto.setSuccess("회원탈퇴 성공", null);
         return new ResponseEntity(responseDTO, HttpStatus.OK);
     }
 
@@ -88,5 +114,4 @@ public class UserService {
                 () -> new CustomException(ErrorCode.NON_LOGIN)
         );
     }
-
 }

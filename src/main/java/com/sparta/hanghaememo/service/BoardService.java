@@ -22,18 +22,11 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final BoardLikesRepository boardLikesRepository;
 
-    @Transactional
-    public ResponseEntity write(BoardRequestDto boardRequestDTO , Users user){
-        Board board = new Board(boardRequestDTO.getTitle(), boardRequestDTO.getContents(), user);
-
-        boardRepository.save(board);
-        ResponseDto responseDTO = ResponseDto.setSuccess("게시글 작성 성공", boardRequestDTO);
-        return new ResponseEntity(responseDTO, HttpStatus.OK);
-    }
+    /* 게시글 조회 */
 
     @Transactional(readOnly = true)
-    // Board 객체를 BoardResponseDTO 타입으로 변경해 리스트 반환
-    public ResponseEntity list() {
+    // 게시글 전체 조회
+    public ResponseEntity getAllBoard() {
         List<BoardResponseDto> boardList = boardRepository.findAllByOrderByCreatedAtDesc().stream()
                 .map(BoardResponseDto::new)
                 .collect(Collectors.toList());
@@ -41,8 +34,9 @@ public class BoardService {
         return new ResponseEntity(responseDTO, HttpStatus.OK);
     }
 
+    // 게시글 선택 조회
     @Transactional(readOnly = true)
-    public ResponseEntity listOne(Long id) {
+    public ResponseEntity getOneBoard(Long id) {
         // 게시글 존재여부 확인
         Board board = checkBoard(id);
         BoardResponseDto boardResponseDto = new BoardResponseDto(board);
@@ -50,8 +44,31 @@ public class BoardService {
         return new ResponseEntity(responseDTO, HttpStatus.OK);
     }
 
+    // 게시글 카테고리별 조회
+    public ResponseEntity getCategorizedBoard(String category) {
+        ResponseDto responseDto = new ResponseDto();
+        if(boardRepository.existsByCategory(category)){
+            List<BoardResponseDto> boardList = boardRepository.findAllByCategory(category).stream()
+                    .map(BoardResponseDto::new)
+                    .collect(Collectors.toList());
+            responseDto = ResponseDto.setSuccess("게시글 조회 성공", boardList);
+            return new ResponseEntity(responseDto, HttpStatus.OK);
+        } else responseDto = ResponseDto.setFail("해당 카테고리는 존재하지 않음");
+        return new ResponseEntity(responseDto, HttpStatus.BAD_REQUEST);
+    }
+
     @Transactional
-    public ResponseEntity update(Long id, BoardRequestDto boardRequestDTO, Users user) {
+    public ResponseEntity createBoard(BoardRequestDto boardRequestDTO , Users user){
+        Board board = new Board(boardRequestDTO.getTitle(), boardRequestDTO.getContents(), boardRequestDTO.getCategory(), user);
+
+        boardRepository.save(board);
+        ResponseDto responseDTO = ResponseDto.setSuccess("게시글 작성 성공", boardRequestDTO);
+        return new ResponseEntity(responseDTO, HttpStatus.OK);
+    }
+
+
+    @Transactional
+    public ResponseEntity updateBoard(Long id, BoardRequestDto boardRequestDTO, Users user) {
         // 게시글 존재여부 확인
         Board board = checkBoard(id);
 
@@ -64,7 +81,7 @@ public class BoardService {
     }
 
     @Transactional
-    public ResponseEntity delete(Long id, Users user) {
+    public ResponseEntity deleteBoard(Long id, Users user) {
         // 게시글 존재여부 확인
         Board board = checkBoard(id);
         // 작성자 게시글 체크
@@ -86,11 +103,11 @@ public class BoardService {
             // 좋아요가 있으면 삭제
             BoardLikes boardLikes = boardLikesRepository.findByBoardIdAndUserId(board.getId(), user.getId());
             boardLikesRepository.delete(boardLikes);
-            board.updatelikes(false);
+            board.updatelikes(boardLikesRepository.countByBoardId(board.getId()));
             responseDTO.setMessage("Board 좋아요 감소");
         }else{ // 없으면 좋아요 +1
             boardLikesRepository.save(new BoardLikes(board, user));
-            board.updatelikes(true);
+            board.updatelikes(boardLikesRepository.countByBoardId(board.getId()));
             responseDTO.setMessage("Board 좋아요 증가");
         }
         responseDTO.setStatus(StatusEnum.OK);

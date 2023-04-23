@@ -53,7 +53,7 @@ public class WebSecurityConfig {
                 // 세션 기반 인증 (현재는 Session 기반 인증을 사용하지 않기 때문에 상태를 없앰)
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 // '/', '/api/member' 모듈에 대해서는 모두 허용 (인증을 하지 않고 사용 가능하게 함)
-                .authorizeHttpRequests().requestMatchers("/api/user/**","/api/read/**").permitAll()
+                .authorizeHttpRequests().requestMatchers("/api/user/signup", "/api/user/login","/api/read/**").permitAll()
                 // 나머지 Request에 대해서는 모두 인증된 사용자만 사용가능하게 함
                 .anyRequest().authenticated()
                 .and().addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
